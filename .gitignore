@@ -1,0 +1,91 @@
+###############################################
+# .gitignore for IISc CDS Chatbot
+###############################################
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Data: ignore all data files in repo
+data/
+
+# Vector/DB artifacts
+*.faiss
+*.npy
+*.pkl
+*.index
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+server.log
+code.txt
+
+# Keep directory structure if needed
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!logs/.gitkeep
+
+# Environment variables
+.env
+.env.local
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models
+models/
+*.bin
+*.safetensors
+
+# Temp & test artifacts
+*.tmp
+*.temp
+test_*.html
+
+# Credentials
+postgrepass.txt
+*.key
+*.pem
+
+# Old backups
+*-old/
+embedding-old/

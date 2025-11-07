@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: iisc_chatbot_api
+    command: python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+    environment:
+      - INDEX_DIR=${INDEX_DIR:-/app/data/index/hash_numpy}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./data/index:/app/data/index:ro
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  ui:
+    build: .
+    container_name: iisc_chatbot_ui
+    command: python -m streamlit run ui/streamlit_app.py --server.port 8501 --server.headless true
+    environment:
+      - API_BASE_URL=http://api:8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=${GEMINI_MODEL:-models/gemini-1.5-flash}
+    volumes:
+      - ./data/index:/app/data/index:ro
+      - ./logs:/app/logs
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    restart: unless-stopped

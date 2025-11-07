@@ -1,0 +1,24 @@
+# Ignore local artifacts & caches
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.swp
+*.tmp
+.DS_Store
+.env
+.env.*
+venv/
+.venv/
+logs/*
+!logs/.gitkeep
+data/raw/
+data/processed/
+# Keep only index folders actually needed (mount externally in compose)
+# data/index/
+# Exclude large model caches if present
+huggingface_cache/
+.cache/

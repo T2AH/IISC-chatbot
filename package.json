@@ -1,0 +1,18 @@
+{
+  "name": "iisc-cds-chatbot",
+  "version": "1.0.0",
+  "description": "IISc CDS department chatbot with MCP crawler",
+  "scripts": {
+    "crawler": "node crawler/mcp_server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["chatbot", "rag", "mcp", "iisc"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "cheerio": "^1.0.0-rc.12",
+    "puppeteer": "^21.5.2",
+    "turndown": "^7.1.2"
+  }
+}
