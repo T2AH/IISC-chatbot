@@ -60,7 +60,7 @@ class SearchHit(BaseModel):
     path: Optional[List[str]] = None
 
 
-app = FastAPI(title="IISc CDS Chatbot API", version="1.0.0")
+app = FastAPI(title="IISc Chatbot API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -70,8 +70,8 @@ app.add_middleware(
 )
 
 
-# Global index state
-INDEX_DIR = os.environ.get("INDEX_DIR", "data/index/hash_numpy")
+# Global index state (prefer IISc 2025nov07 index by default)
+INDEX_DIR = os.environ.get("INDEX_DIR", "data/index/fastembed_bge_small_iisc_2025nov07")
 _store: Optional[NumpyVectorStore] = None
 _hash_embedder: Optional[HashingEmbedder] = None
 _fastembed: Any = None
@@ -174,7 +174,7 @@ def _startup():
 
 @app.get("/")
 def root():
-    return {"message": "IISc CDS Chatbot API", "version": "1.0.0"}
+    return {"message": "IISc Chatbot API", "version": "1.0.0", "model_alias": "IISc Chatbot"}
 
 
 @app.get("/health")

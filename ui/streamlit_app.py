@@ -25,36 +25,33 @@ except Exception:
 # Vector stores/loaders
 from src.vector_store.numpy_store import NumpyVectorStore
 
-try:
-    import faiss  # type: ignore
-except Exception:
-    faiss = None  # type: ignore
+# FAISS support removed for minimal NumPy-only runtime.
 
 
-st.set_page_config(page_title="CDS Chatbot", page_icon="💬", layout="wide")
+st.set_page_config(page_title="IISc Chatbot", page_icon="💬", layout="wide")
 
 # Load environment variables from a .env file if present
 load_dotenv()
 
 
-def discover_default_index() -> tuple[str, str]:
-    """Return (backend, index_dir) default based on existing folders."""
+def discover_default_index() -> str:
+    """Return default NumPy index directory based on existing folders."""
+    # Prefer the dated IISc index first (2025nov07), then general fastembed, then hash fallback.
     candidates = [
-        ("FAISS", "data/index/faiss_flat_bge_small"),
-        ("FAISS", "data/index/faiss_flat_hash_sample"),
-        ("NumPy", "data/index/fastembed_bge_small"),
-        ("NumPy", "data/index/hash_numpy"),
+        "data/index/fastembed_bge_small_iisc_2025nov07",
+        "data/index/fastembed_bge_small",
+        "data/index/hash_numpy",
     ]
-    for backend, path in candidates:
+    for path in candidates:
         if os.path.exists(path):
-            return backend, path
-    return "NumPy", "data/index/hash_numpy"
+            return path
+    return "data/index/hash_numpy"
 
 
-def discover_indexes() -> Dict[str, List[str]]:
-    """Scan data/index for common index layouts and return {backend: [paths...]}"""
+def discover_numpy_indexes() -> List[str]:
+    """Scan data/index for NumPy index layouts (vectors.npz)."""
     base = "data/index"
-    out = {"NumPy": [], "FAISS": []}
+    out: List[str] = []
     if not os.path.isdir(base):
         return out
     try:
@@ -62,11 +59,8 @@ def discover_indexes() -> Dict[str, List[str]]:
             p = os.path.join(base, name)
             if not os.path.isdir(p):
                 continue
-            # Heuristics: FAISS has faiss.index; NumPy has vectors.npz
-            if os.path.exists(os.path.join(p, "faiss.index")):
-                out["FAISS"].append(p)
             if os.path.exists(os.path.join(p, "vectors.npz")):
-                out["NumPy"].append(p)
+                out.append(p)
     except Exception:
         pass
     return out
@@ -93,24 +87,6 @@ def load_numpy_store(index_dir: str) -> NumpyVectorStore:
     return store
 
 
-@st.cache_resource(show_spinner=False)
-def load_faiss_index(index_dir: str):
-    if faiss is None:
-        raise RuntimeError("faiss is not installed. Install faiss-cpu to use FAISS backend.")
-    index_path = os.path.join(index_dir, "faiss.index")
-    meta_path = os.path.join(index_dir, "metadata.jsonl")
-    if not os.path.exists(index_path):
-        raise FileNotFoundError(f"FAISS index not found: {index_path}")
-    index = faiss.read_index(index_path)
-    metas: List[Dict[str, Any]] = []
-    if os.path.exists(meta_path):
-        with open(meta_path, "r", encoding="utf-8") as f:
-            for line in f:
-                try:
-                    metas.append(json.loads(line))
-                except Exception:
-                    metas.append({})
-    return index, metas
 
 
 @st.cache_resource(show_spinner=False)
@@ -124,6 +100,7 @@ def get_embedder(encoder: str, model: Optional[str], dim_hint: int) -> Any:
 
 
 def l2_normalize(v: np.ndarray) -> np.ndarray:
+    # Retained for compatibility; NumPy backend already normalizes embeddings.
     n = np.linalg.norm(v)
     if n > 0:
         v = v / n
@@ -175,39 +152,6 @@ def retrieve_numpy(index_dir: str, encoder: str, model: Optional[str], query: st
     return out
 
 
-def retrieve_faiss(index_dir: str, encoder: str, model: Optional[str], query: str, k: int) -> List[Dict[str, Any]]:
-    index, metas = load_faiss_index(index_dir)
-    # infer dim from index
-    try:
-        dim = index.d
-    except Exception:
-        dim = 384 if encoder == "fastembed" else 2048
-    emb = get_embedder(encoder, model, dim)
-    # Validate embedding dimension vs FAISS index
-    try:
-        probe = emb.encode("dimension check")
-        if probe.shape[-1] != dim:
-            raise ValueError(
-                f"Encoder/model dim {probe.shape[-1]} != FAISS index dim {dim}. "
-                "Pick the matching encoder or use the right index directory."
-            )
-    except Exception as e:
-        raise RuntimeError(f"Embedding initialization failed: {e}")
-    q = l2_normalize(emb.encode(query))
-    D, I = index.search(np.expand_dims(q, 0), k)
-    out = []
-    for rank, idx in enumerate(I[0]):
-        if idx < 0 or idx >= len(metas):
-            continue
-        md = metas[idx]
-        out.append({
-            "score": float(D[0][rank]),
-            "url": md.get("url"),
-            "title": md.get("title"),
-            "text": md.get("text"),
-            "path": [seg.get("text") for seg in (md.get("effective_path") or [])],
-        })
-    return out
 
 
 def render_sources(sources: List[Dict[str, Any]]):
@@ -221,19 +165,18 @@ def render_sources(sources: List[Dict[str, Any]]):
 
 
 def main():
-    st.title("CDS Department Chatbot 💬")
-    st.caption("Search CDS content and answer with citations using Google Gemini")
+    st.title("IISc Chatbot 💬")
+    st.caption("Semantic search over IISc content with optional Gemini reasoning (branded as 'IISc Chatbot')")
 
     # Sidebar: config
     with st.sidebar:
         st.header("Settings")
-        default_backend, default_index = discover_default_index()
-        backend = st.selectbox("Vector backend", ["NumPy", "FAISS"], index=0 if default_backend == "NumPy" else 1)
-        discovered = discover_indexes()
-        choices = ["<custom path>"] + discovered.get(backend, [])
+        default_index = discover_default_index()
+        discovered = discover_numpy_indexes()
+        choices = ["<custom path>"] + discovered
         pick = st.selectbox("Index directory", choices, index=(choices.index(default_index) if default_index in choices else 0))
         if pick == "<custom path>":
-            index_dir = st.text_input("Custom index path", value=default_index)
+            index_dir = st.text_input("Custom NumPy index path", value=default_index)
         else:
             index_dir = pick
         meta = read_index_meta(index_dir)
@@ -244,13 +187,8 @@ def main():
         # Show index metadata hints
         idx_dim = None
         try:
-            if backend == "NumPy":
-                s = load_numpy_store(index_dir)
-                idx_dim = s.dim
-            else:
-                import faiss as _f  # type: ignore
-                idx = load_faiss_index(index_dir)[0]
-                idx_dim = getattr(idx, "d", None)
+            s = load_numpy_store(index_dir)
+            idx_dim = s.dim
         except Exception:
             pass
         if meta:
@@ -258,10 +196,13 @@ def main():
         if idx_dim:
             st.caption(f"Index dim: {idx_dim}")
         top_k = st.slider("Top-K", min_value=1, max_value=10, value=5)
-        api_key = st.text_input("Gemini API Key", type="password", value=os.environ.get("GEMINI_API_KEY", ""))
-        gemini_model_default = os.environ.get("GEMINI_MODEL", "models/gemini-1.5-flash")
-        gemini_model = st.text_input("Gemini Model", value=gemini_model_default, help="Try models/gemini-1.5-flash or gemini-1.5-flash")
-        st.info("Store your key in .env as GEMINI_API_KEY and optional GEMINI_MODEL, or paste key/model here for this session.")
+        # Gemini fixed configuration (no UI inputs): always use gemini-2.5-flash, key from environment only.
+        gemini_model = "models/gemini-2.5-flash"
+        api_key = os.environ.get("GEMINI_API_KEY", "")
+        if api_key:
+            st.caption("Gemini backend: Gemini 2.5 Flash (key hidden)")
+        else:
+            st.caption("Gemini backend unavailable (no GEMINI_API_KEY set). Showing sources only.")
 
         # API connectivity check
         st.divider()
@@ -301,30 +242,23 @@ def main():
     with st.chat_message("assistant"):
         with st.spinner("Searching and generating answer…"):
             try:
-                if backend == "NumPy":
-                    contexts = retrieve_numpy(index_dir, encoder, model, user_query, top_k)
-                else:
-                    contexts = retrieve_faiss(index_dir, encoder, model, user_query, top_k)
+                contexts = retrieve_numpy(index_dir, encoder, model, user_query, top_k)
             except Exception as e:
                 st.error(f"Retrieval failed: {e}")
                 return
 
             # Build prompt and call Gemini
-            if not api_key:
-                st.warning("Gemini API key not provided. Showing top sources only.")
-                answer = "\n\n".join([f"[{i+1}] {(c.get('title') or c.get('url') or 'Source')} — {(c.get('text') or '')[:200]}…" for i, c in enumerate(contexts[:3])])
-            else:
+            if api_key:
                 try:
                     llm = Gemini(api_key=api_key, model_name=gemini_model)
                     prompt = build_prompt(user_query, contexts)
                     answer = llm.generate(prompt)
-                    # Surface chosen model name if wrapper exposes it
-                    used = getattr(llm, "selected_model", None)
-                    if used:
-                        st.caption(f"Gemini model: {used}")
+                    st.caption("Model: Gemini 2.5 Flash (IISc Chatbot)")
                 except Exception as e:
                     st.error(f"Gemini error: {e}")
                     answer = "(Failed to generate with Gemini. Showing sources instead.)\n\n" + "\n\n".join([f"[{i+1}] {(c.get('title') or c.get('url') or 'Source')} — {(c.get('text') or '')[:200]}…" for i, c in enumerate(contexts[:3])])
+            else:
+                answer = "\n\n".join([f"[{i+1}] {(c.get('title') or c.get('url') or 'Source')} — {(c.get('text') or '')[:200]}…" for i, c in enumerate(contexts[:3])])
 
             st.markdown(answer)
             render_sources(contexts[:5])

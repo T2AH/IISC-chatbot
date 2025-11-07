@@ -47,15 +47,34 @@ stop_if_running
 kill_port "$API_PORT"
 kill_port "$UI_PORT"
 
-# 2) Python env and dependencies
-if [ ! -d venv ]; then
-  echo "Creating virtual environment..."
-  python3 -m venv venv
+# 2) Python env and dependencies (prefer .venv if present)
+# Determine VENV_DIR: $VENV_DIR > .venv > venv
+VENV_DIR="${VENV_DIR:-}"
+if [ -z "$VENV_DIR" ]; then
+  if [ -d .venv ]; then
+    VENV_DIR=".venv"
+  elif [ -d venv ]; then
+    VENV_DIR="venv"
+  else
+    VENV_DIR=".venv"
+  fi
 fi
-# shellcheck disable=SC1091
-source venv/bin/activate
-python3 -m pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
+
+if [ ! -d "$VENV_DIR" ]; then
+  echo "Creating virtual environment at $VENV_DIR ..."
+  python3 -m venv "$VENV_DIR"
+fi
+
+PY="$VENV_DIR/bin/python"
+if [ ! -x "$PY" ]; then
+  echo "Virtualenv at $VENV_DIR seems broken (no bin/python). Recreating..."
+  rm -rf "$VENV_DIR"
+  python3 -m venv "$VENV_DIR"
+  PY="$VENV_DIR/bin/python"
+fi
+
+"$PY" -m pip install --upgrade pip setuptools wheel
+"$PY" -m pip install -r requirements.txt
 
 # 3) Load .env (export all)
 set -a
@@ -68,9 +87,9 @@ export API_PORT UI_PORT
 set +a
 
 # 4) Start services
-nohup python3 -m uvicorn api.main:app --host 0.0.0.0 --port "$API_PORT" > logs/api.out 2>&1 &
+nohup "$PY" -m uvicorn api.main:app --host 0.0.0.0 --port "$API_PORT" > logs/api.out 2>&1 &
 echo $! > .api.pid
-nohup python3 -m streamlit run ui/streamlit_app.py --server.port "$UI_PORT" --server.headless true > logs/ui.out 2>&1 &
+nohup "$PY" -m streamlit run ui/streamlit_app.py --server.port "$UI_PORT" --server.headless true > logs/ui.out 2>&1 &
 echo $! > .ui.pid
 
 echo "API started:    http://localhost:$API_PORT (PID $(cat .api.pid))"

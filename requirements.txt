@@ -12,8 +12,7 @@ streamlit>=1.39.0
 sentence-transformers>=2.7
 fastembed>=0.3.5
 
-# Vector stores (optional)
-faiss-cpu>=1.8.0
+# Vector stores (NumPy-only runtime)
 
 # LLM (Gemini)
 google-generativeai>=0.7.2
