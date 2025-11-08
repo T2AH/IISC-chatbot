@@ -4,6 +4,7 @@ This section provides step-by-step instructions for running, accessing, and usin
 
 ### 0. Connect to Your Server via SSH
 
+
 If deploying on a remote server (e.g., AWS EC2), first SSH into your instance:
 
 ```bash
@@ -11,6 +12,12 @@ ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
 ```
 
 Replace `/path/to/your-key.pem` with your SSH key path.
+
+After successful SSH login, navigate to the application directory:
+
+```bash
+cd /opt/iisc-chatbot
+```
 
 ### 1. Run the Application (Recommended: Docker Compose)
 ### 2. Access the Container Shell (Optional)
