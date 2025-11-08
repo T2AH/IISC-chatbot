@@ -16,8 +16,13 @@
 ### 1. SSH into your server
 ```bash
 ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
+```
+Replace `/path/to/your-key.pem` with your SSH key path.
+```
 cd /opt/iisc-chatbot
 ```
+
+After successful SSH login, navigate to the application directory:
 
 ### 2. Build & Run the Application
 ```bash
