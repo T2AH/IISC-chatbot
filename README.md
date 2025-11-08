@@ -8,7 +8,7 @@ This section provides step-by-step instructions for running, accessing, and usin
 If deploying on a remote server (e.g., AWS EC2), first SSH into your instance:
 
 ```bash
-ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
+ssh -i </path/to/iisc-chatbot.pem> ubuntu@65.2.148.130
 ```
 
 Replace `/path/to/your-key.pem` with your SSH key path.
