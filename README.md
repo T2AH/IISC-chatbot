@@ -15,7 +15,7 @@
 
 ### 1. SSH into your server
 ```bash
-ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
+ssh -i /path/to/iisc-chatbot.pem ubuntu@65.0.29.172
 ```
 Replace `/path/to/your-key.pem` with your .pem key path.
 ```
