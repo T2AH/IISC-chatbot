@@ -17,7 +17,7 @@
 ```bash
 ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
 ```
-Replace `/path/to/your-key.pem` with your SSH key path.
+Replace `/path/to/your-key.pem` with your .pem key path.
 ```
 cd /opt/iisc-chatbot
 ```
