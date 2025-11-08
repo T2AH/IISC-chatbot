@@ -46,8 +46,30 @@ class NumpyVectorStore:
 				f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 	def load(self, dirpath: str):
-		vec_path = os.path.join(dirpath, "vectors.npz")
-		meta_path = os.path.join(dirpath, "metadata.jsonl")
+		import os
+		import json
+		import numpy as np
+		import boto3
+		import tempfile
+		import shutil
+
+		# Check for S3 config
+		s3_bucket = os.environ.get("S3_BUCKET")
+		s3_prefix = os.environ.get("S3_INDEX_PREFIX", dirpath)
+		use_s3 = bool(s3_bucket)
+
+		if use_s3:
+			s3 = boto3.client("s3")
+			tmpdir = tempfile.mkdtemp()
+			vec_path = os.path.join(tmpdir, "vectors.npz")
+			meta_path = os.path.join(tmpdir, "metadata.jsonl")
+			# Download from S3
+			s3.download_file(s3_bucket, f"{s3_prefix}/vectors.npz", vec_path)
+			s3.download_file(s3_bucket, f"{s3_prefix}/metadata.jsonl", meta_path)
+		else:
+			vec_path = os.path.join(dirpath, "vectors.npz")
+			meta_path = os.path.join(dirpath, "metadata.jsonl")
+
 		if os.path.exists(vec_path):
 			data = np.load(vec_path)
 			self._vectors = data["vectors"].astype(np.float32)
@@ -61,6 +83,8 @@ class NumpyVectorStore:
 						self._meta.append(json.loads(line))
 					except Exception:
 						continue
+		if use_s3:
+			shutil.rmtree(tmpdir)
 
 	def search(self, query: np.ndarray, k: int = 5) -> List[Tuple[float, Dict[str, Any]]]:
 		if self._vectors is None or self._vectors.shape[0] == 0:

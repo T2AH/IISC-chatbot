@@ -1,0 +1,16 @@
+[Unit]
+Description=IISc Chatbot Docker Container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/iisc-chatbot
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.prod.yml up -d
+ExecStop=/usr/local/bin/docker-compose -f docker-compose.prod.yml down
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

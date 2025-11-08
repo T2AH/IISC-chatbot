@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: iisc-chatbot
+    restart: unless-stopped
+    ports:
+      - "8000:8000"  # FastAPI
+      - "8501:8501"  # Streamlit
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - INDEX_DIR=${INDEX_DIR:-data/index/fastembed_bge_small_iisc_2025nov07}
+      - API_BASE_URL=${API_BASE_URL:-http://localhost:8000}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data:ro  # Read-only index data
+      - ./logs:/app/logs      # Persistent logs
+      - ./.env:/app/.env:ro   # Environment file
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - iisc-network
+
+networks:
+  iisc-network:
+    driver: bridge
