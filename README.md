@@ -1,73 +1,56 @@
 
-**Web Application URL:**
-[http://65.0.29.172](http://65.0.29.172)
 
-This main URL is currently accessible for users.
+<div align="center">
+	<h1>IISc Chatbot</h1>
+	<br><br>
+	<strong>Web Application URL:</strong><br>
+	<a href="http://65.0.29.172" style="font-size:1.2em; font-weight:bold;">http://65.0.29.172</a>
+	<br><br>
+	<em>This is the main public URL for users.</em>
+</div>
 
-## Getting Started: Accessing the IISc Chatbot Application
+---
 
-This section provides step-by-step instructions for running, accessing, and using the IISc Chatbot API and UI.
+## Quick Start
 
-### 0. Connect to Your Server via SSH
-
-
-If deploying on a remote server (e.g., AWS EC2), first SSH into your instance:
-
+### 1. SSH into your server
 ```bash
 ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
-```
-
-Replace `/path/to/your-key.pem` with your SSH key path.
-
-After successful SSH login, navigate to the application directory:
-
-```bash
 cd /opt/iisc-chatbot
 ```
 
-### 1. Run the Application (Recommended: Docker Compose)
-### 2. Access the Container Shell (Optional)
+### 2. Build & Run the Application
+```bash
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up -d
+```
+Or use the shell script:
+```bash
+bash scripts/run_application.sh
+```
 
-To debug or inspect the running container, you can open a shell inside it:
-
+### 3. (Optional) Access Container Shell
 ```bash
 docker exec -it iisc-chatbot-api-1 /bin/bash
 ```
 
-This gives you a bash shell inside the API container. You can run commands, check logs, or test endpoints from within the container.
+---
+
+## Features
+- FastEmbed-powered semantic search
+- NumPy vector store for blazing-fast retrieval
+- Streamlit UI for chat and source citations
+- Gemini LLM integration (optional)
+- Modular pipeline: crawl, clean, chunk, embed, serve
 
 ---
 
 # IISc Chatbot (RAG Pipeline: FastEmbed + NumPy)
 
-## Getting Started: Accessing the IISc Chatbot Application
 
-This section provides step-by-step instructions for running, accessing, and using the IISc Chatbot API and UI.
-
-### 1. Run the Application (Recommended: Docker Compose)
-
-```bash
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-Alternatively, you can use the shell script:
-
-```bash
-bash scripts/run_application.sh
-```
-
-### 2. Access the API and UI
-
-
-**Web Application URL:**
-	[http://65.0.29.172](http://65.0.29.172)
-
-Only this main URL is currently accessible for users. 
-
-If running on a remote server (e.g., AWS EC2), replace `localhost` with your server's public IP or DNS. Make sure your cloud firewall/security group allows inbound traffic on ports 8000 (API) and 8501 (UI).
-
-### 3. Example: Query the API
+## Example API Usage
+<details>
+<summary>Show API Examples</summary>
 
 **Health Check:**
 ```bash
@@ -87,9 +70,9 @@ import requests
 resp = requests.post("http://localhost:8000/search", json={"query": "quantum materials", "top_k": 5})
 print(resp.json())
 ```
+</details>
 
-### 4. Troubleshooting & Tips
-
+## Troubleshooting & Tips
 - If you see `Connection refused`, check that the container is running: `docker ps`
 - For cloud servers, ensure ports 8000/8501 are open in your security group
 - Check logs for errors: `docker logs iisc-chatbot-api-1`
@@ -103,23 +86,25 @@ A minimal retrieval‑augmented chatbot for IISc content. The pipeline:
 crawl → clean & dedup → link graph → tree‑smart chunking → FastEmbed embeddings → NumPy index → API + UI (Gemini optional)
 ```
 
-## Current Architecture (FastEmbed‑Only)
+
+## Architecture Overview
 We have pruned FAISS, SBERT, Chromadb, Ollama, and legacy CDS‑specific code. The remaining stack is small and CPU‑friendly.
 
-| Component | File(s) | Purpose |
-|-----------|---------|---------|
-| Crawler | `scripts/crawl_iisc_full.py` | BFS crawl of `iisc.ac.in` (+ optional github.io external depth) with dedup, robots respect, depth control |
-| Preprocess + Dedup | `scripts/preprocess_and_chunk.py` | Clean text, dedup by URL & content, write multiple JSON reports |
-| Link Graph | `scripts/build_link_graph.py` | Build incoming/outgoing link mappings, collapse duplicates |
-| Tree Chunking | `scripts/chunk_pages_tree.py`; `src/data_processing/tree_chunker.py`; `src/utils/url_hierarchy.py` | Content + URL + referential paths → hierarchical chunks with effective context |
-| Index Builder | `scripts/build_index.py`; `src/embeddings/fastembed_embedder.py`; `src/vector_store/numpy_store.py` | Batch embed FastEmbed chunks, store vectors.npz + metadata.jsonl + index_meta.json |
-| Retrieval (CLI) | `scripts/retrieve.py` | Query NumPy index with rerank heuristics |
-| API | `api/main.py` | FastAPI endpoints (`/health`, `/search`, `/query`) loading NumPy index |
-| UI | `ui/streamlit_app.py` | Streamlit chat interface, source citations, optional Gemini generation |
-| LLM Wrapper | `src/llm/gemini.py` | Simple Gemini text generation wrapper |
-| Text Cleaning | `src/data_processing/text_clean.py` | Normalize whitespace, remove boilerplate |
-| Helpers | `src/utils/helpers.py`, `src/utils/url_hierarchy.py` | Utility functions and URL→heading path construction |
-| App Control | `scripts/app_manager.py`, `scripts/run_application.sh`, `scripts/stop_application.sh` | Start/stop API + UI; port cleanup |
+
+| Component      | File(s) | Purpose |
+|-------------------|-----------|-----------|
+| Crawler           | `scripts/crawl_iisc_full.py` | BFS crawl of `iisc.ac.in` (+ optional github.io external depth) with dedup, robots respect, depth control |
+| Preprocess + Dedup| `scripts/preprocess_and_chunk.py` | Clean text, dedup by URL & content, write multiple JSON reports |
+| Link Graph        | `scripts/build_link_graph.py` | Build incoming/outgoing link mappings, collapse duplicates |
+| Tree Chunking     | `scripts/chunk_pages_tree.py`; `src/data_processing/tree_chunker.py`; `src/utils/url_hierarchy.py` | Content + URL + referential paths → hierarchical chunks with effective context |
+| Index Builder     | `scripts/build_index.py`; `src/embeddings/fastembed_embedder.py`; `src/vector_store/numpy_store.py` | Batch embed FastEmbed chunks, store vectors.npz + metadata.jsonl + index_meta.json |
+| Retrieval (CLI)   | `scripts/retrieve.py` | Query NumPy index with rerank heuristics |
+| API               | `api/main.py` | FastAPI endpoints (`/health`, `/search`, `/query`) loading NumPy index |
+| UI                | `ui/streamlit_app.py` | Streamlit chat interface, source citations, optional Gemini generation |
+| LLM Wrapper       | `src/llm/gemini.py` | Simple Gemini text generation wrapper |
+| Text Cleaning     | `src/data_processing/text_clean.py` | Normalize whitespace, remove boilerplate |
+| Helpers           | `src/utils/helpers.py`, `src/utils/url_hierarchy.py` | Utility functions and URL→heading path construction |
+| App Control       | `scripts/app_manager.py`, `scripts/run_application.sh`, `scripts/stop_application.sh` | Start/stop API + UI; port cleanup |
 | Remote Monitoring | `scripts/remote_poll.sh` | Poll remote index build logs |
 
 ## Environment Setup
