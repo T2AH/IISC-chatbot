@@ -11,7 +11,7 @@ If deploying on a remote server (e.g., AWS EC2), first SSH into your instance:
 ssh -i </path/to/iisc-chatbot.pem> ubuntu@65.2.148.130
 ```
 
-Replace `/path/to/your-key.pem` with your SSH key path.
+Replace `/path/to/your-key.pem` with your .pem file key path.
 
 After successful SSH login, navigate to the application directory:
 
