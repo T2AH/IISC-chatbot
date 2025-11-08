@@ -74,7 +74,7 @@ if [ ! -x "$PY" ]; then
 fi
 
 "$PY" -m pip install --upgrade pip setuptools wheel
-"$PY" -m pip install -r requirements.txt
+# "$PY" -m pip install -r requirements.txt
 
 # 3) Load .env (export all)
 set -a
@@ -86,12 +86,6 @@ fi
 export API_PORT UI_PORT
 set +a
 
-# 4) Start services
-nohup "$PY" -m uvicorn api.main:app --host 0.0.0.0 --port "$API_PORT" > logs/api.out 2>&1 &
-echo $! > .api.pid
-nohup "$PY" -m streamlit run ui/streamlit_app.py --server.port "$UI_PORT" --server.headless true > logs/ui.out 2>&1 &
-echo $! > .ui.pid
 
-echo "API started:    http://localhost:$API_PORT (PID $(cat .api.pid))"
-echo "Streamlit UI:   http://localhost:$UI_PORT (PID $(cat .ui.pid))"
-echo "Logs: logs/api.out, logs/ui.out"
+# 4) Start API service in foreground (for Docker)
+exec "$PY" -m uvicorn api.main:app --host 0.0.0.0 --port "$API_PORT"

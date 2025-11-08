@@ -1,4 +1,89 @@
+## Getting Started: Accessing the IISc Chatbot Application
+
+This section provides step-by-step instructions for running, accessing, and using the IISc Chatbot API and UI.
+
+### 0. Connect to Your Server via SSH
+
+If deploying on a remote server (e.g., AWS EC2), first SSH into your instance:
+
+```bash
+ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
+```
+
+Replace `/path/to/your-key.pem` with your SSH key path.
+
+### 1. Run the Application (Recommended: Docker Compose)
+### 2. Access the Container Shell (Optional)
+
+To debug or inspect the running container, you can open a shell inside it:
+
+```bash
+docker exec -it iisc-chatbot-api-1 /bin/bash
+```
+
+This gives you a bash shell inside the API container. You can run commands, check logs, or test endpoints from within the container.
+
+---
+
 # IISc Chatbot (RAG Pipeline: FastEmbed + NumPy)
+
+## Getting Started: Accessing the IISc Chatbot Application
+
+This section provides step-by-step instructions for running, accessing, and using the IISc Chatbot API and UI.
+
+### 1. Run the Application (Recommended: Docker Compose)
+
+```bash
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+Alternatively, you can use the shell script:
+
+```bash
+bash scripts/run_application.sh
+```
+
+### 2. Access the API and UI
+
+- **API Endpoint:**  
+	[http://localhost:8000/health](http://localhost:8000/health) — returns API status and index info  
+	[http://localhost:8000/docs](http://localhost:8000/docs) — interactive OpenAPI docs  
+	[http://localhost:8000/search](http://localhost:8000/search) — POST endpoint for search queries
+- **UI Endpoint:**  
+	[http://localhost:8501](http://localhost:8501) — Streamlit chat interface
+
+If running on a remote server (e.g., AWS EC2), replace `localhost` with your server's public IP or DNS. Make sure your cloud firewall/security group allows inbound traffic on ports 8000 (API) and 8501 (UI).
+
+### 3. Example: Query the API
+
+**Health Check:**
+```bash
+curl http://localhost:8000/health
+```
+
+**Search Query:**
+```bash
+curl -X POST http://localhost:8000/search \
+	-H "Content-Type: application/json" \
+	-d '{"query": "quantum materials", "top_k": 5}'
+```
+
+**Python Example:**
+```python
+import requests
+resp = requests.post("http://localhost:8000/search", json={"query": "quantum materials", "top_k": 5})
+print(resp.json())
+```
+
+### 4. Troubleshooting & Tips
+
+- If you see `Connection refused`, check that the container is running: `docker ps`
+- For cloud servers, ensure ports 8000/8501 are open in your security group
+- Check logs for errors: `docker logs iisc-chatbot-api-1`
+- Edit `.env` to set API keys and index directory if needed
+
+---
 
 A minimal retrieval‑augmented chatbot for IISc content. The pipeline:
 
