@@ -4,7 +4,7 @@
 	<h1>IISc Chatbot</h1>
 	<br><br>
 	<strong>Web Application URL:</strong><br>
-	<a href="http://65.0.29.172" style="font-size:1.2em; font-weight:bold;">http://65.0.29.172</a>
+	<a href="http://65.0.29.172:8501" style="font-size:1.2em; font-weight:bold;">http://65.0.29.172</a>
 	<br><br>
 	<em>This is the main public URL for users.</em>
 </div>
