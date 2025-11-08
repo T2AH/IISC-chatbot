@@ -1,3 +1,9 @@
+
+**Web Application URL:**
+[http://65.0.29.172](http://65.0.29.172)
+
+This main URL is currently accessible for users.
+
 ## Getting Started: Accessing the IISc Chatbot Application
 
 This section provides step-by-step instructions for running, accessing, and using the IISc Chatbot API and UI.
@@ -8,10 +14,10 @@ This section provides step-by-step instructions for running, accessing, and usin
 If deploying on a remote server (e.g., AWS EC2), first SSH into your instance:
 
 ```bash
-ssh -i </path/to/iisc-chatbot.pem> ubuntu@65.2.148.130
+ssh -i /path/to/iisc-chatbot.pem ubuntu@65.2.148.130
 ```
 
-Replace `/path/to/your-key.pem` with your .pem file key path.
+Replace `/path/to/your-key.pem` with your SSH key path.
 
 After successful SSH login, navigate to the application directory:
 
@@ -53,12 +59,11 @@ bash scripts/run_application.sh
 
 ### 2. Access the API and UI
 
-- **API Endpoint:**  
-	[http://localhost:8000/health](http://localhost:8000/health) — returns API status and index info  
-	[http://localhost:8000/docs](http://localhost:8000/docs) — interactive OpenAPI docs  
-	[http://localhost:8000/search](http://localhost:8000/search) — POST endpoint for search queries
-- **UI Endpoint:**  
-	[http://localhost:8501](http://localhost:8501) — Streamlit chat interface
+
+**Web Application URL:**
+	[http://65.0.29.172](http://65.0.29.172)
+
+Only this main URL is currently accessible for users. 
 
 If running on a remote server (e.g., AWS EC2), replace `localhost` with your server's public IP or DNS. Make sure your cloud firewall/security group allows inbound traffic on ports 8000 (API) and 8501 (UI).
 
