@@ -1,43 +1,24 @@
 
 
-<div align="center">
-	<h1>IISc Chatbot</h1>
-	<br><br>
-	<strong>Web Application URL:</strong><br>
-	<a href="http://65.0.29.172:8501" style="font-size:1.2em; font-weight:bold;">http://65.0.29.172</a>
-	<br><br>
-	<em>This is the main public URL for users.</em>
-</div>
 
----
+## Quick Test: Connect to IISc Chatbot
 
-## Quick Start
+Follow these steps to quickly connect and test the chatbot:
 
-### 1. SSH into your server
-```bash
-ssh -i /path/to/iisc-chatbot.pem ubuntu@65.0.29.172
-```
-Replace `/path/to/your-key.pem` with your .pem key path.
-```
-cd /opt/iisc-chatbot
-```
-
-After successful SSH login, navigate to the application directory:
-
-### 2. Build & Run the Application
-```bash
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml up -d
-```
-Or use the shell script:
-```bash
-bash scripts/run_application.sh
-```
-
-### 3. (Optional) Access Container Shell
-```bash
-docker exec -it iisc-chatbot-api-1 /bin/bash
-```
+1. **SSH into the server**
+	```bash
+	ssh -i /path/to/iisc-chatbot.pem ubuntu@65.0.29.172
+	```
+2. **Navigate to the chatbot folder**
+	```bash
+	cd /opt/iisc-chatbot
+	```
+3. **Start the Streamlit UI**
+	```bash
+	streamlit run ui/streamlit_app.py --server.port 8501
+	```
+4. **Open the chatbot in your browser**
+	[http://65.0.29.172:8501/](http://65.0.29.172:8501/)
 
 ---
 
