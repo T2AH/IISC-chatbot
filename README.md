@@ -1,6 +1,3 @@
-
-
-
 ## Quick Test: Connect to IISc Chatbot
 
 Follow these steps to quickly connect and test the chatbot:
