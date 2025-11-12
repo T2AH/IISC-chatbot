@@ -1,8 +1,35 @@
+# IISc Chatbot (RAG Pipeline: FastEmbed + NumPy)
+
+## About the Project
+
+The **IISc Chatbot** is an intelligent question-answering system designed to help users find information about the Indian Institute of Science (IISc). It uses a **Retrieval-Augmented Generation (RAG)** approach to provide accurate, context-aware answers based on crawled content from IISc websites.
+
+### What It Does
+- **Crawls and indexes** IISc website content (departments, faculty, research, admissions, etc.)
+- **Performs semantic search** using FastEmbed embeddings to find relevant information
+- **Generates natural language responses** using Google's Gemini LLM (optional)
+- **Provides source citations** so users can verify information and explore further
+
+### How It Works
+1. **Input**: User asks a question in natural language (e.g., "What research does the CDS department do?")
+2. **Retrieval**: The system searches through indexed IISc content using semantic similarity
+3. **Generation**: Retrieved context is passed to Gemini LLM to generate a coherent answer
+4. **Output**: User receives an answer with links to source pages for verification
+
+### Core Technology Stack
+- **FastEmbed**: Lightweight, CPU-friendly embedding model for semantic search
+- **NumPy**: Efficient in-memory vector store for fast retrieval
+- **FastAPI**: Backend API for search and query endpoints
+- **Streamlit**: Interactive web UI for chatting and viewing sources
+- **Gemini LLM**: Optional language model for generating natural responses
+
+---
+
 ## Quick Test: Connect to IISc Chatbot
 
 Follow these steps to quickly connect and test the chatbot:
 
-1. **SSH into the server**
+1. **SSH into the server** (administrators only)
 	```bash
 	ssh -i /path/to/iisc-chatbot.pem ubuntu@65.0.29.172
 	```
@@ -14,8 +41,11 @@ Follow these steps to quickly connect and test the chatbot:
 	```bash
 	streamlit run ui/streamlit_app.py --server.port 8501
 	```
-4. **Open the chatbot in your browser  ( steps 1,2,3 are only for the administrators to download the whole code and test it ... you can simply open the link on step 4 to use it . Link is live and working actively from any device ... make sure not to use the chatbot on multiple ( more than 3 ) devices at once because that might cost us money for the api usage **
+4. **Open the chatbot in your browser** (anyone can access)
+	
 	[http://65.0.29.172:8501/](http://65.0.29.172:8501/)
+	
+	**Note**: Steps 1-3 are only for administrators. Regular users can simply open the link above. The chatbot is live and accessible from any device. Please avoid using it on more than 3 devices simultaneously to manage API costs.
 
 ---
 
@@ -27,8 +57,6 @@ Follow these steps to quickly connect and test the chatbot:
 - Modular pipeline: crawl, clean, chunk, embed, serve
 
 ---
-
-# IISc Chatbot (RAG Pipeline: FastEmbed + NumPy)
 
 
 ## Example API Usage
@@ -210,7 +238,7 @@ The `data/` directory is ignored to prevent large binary artifacts in Git. Keep 
 Please open Issues / PRs with clear descriptions. Style: keep scripts single‑purpose, avoid heavy dependencies, prefer pure Python + NumPy.
 
 ## License
-MIT (add explicit `LICENSE` file if missing before public release).
+MIT License. See the [package.json](package.json) for details.
 
 ## Disclaimer
 Gemini answers only use provided context; if insufficient, it should respond that more information is needed.
