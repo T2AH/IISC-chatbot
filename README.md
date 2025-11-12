@@ -237,8 +237,6 @@ The `data/` directory is ignored to prevent large binary artifacts in Git. Keep 
 ## Contributing
 Please open Issues / PRs with clear descriptions. Style: keep scripts single‑purpose, avoid heavy dependencies, prefer pure Python + NumPy.
 
-## License
-MIT License. See the [package.json](package.json) for details.
 
 ## Disclaimer
 Gemini answers only use provided context; if insufficient, it should respond that more information is needed.
