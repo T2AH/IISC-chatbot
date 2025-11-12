@@ -14,7 +14,7 @@ Follow these steps to quickly connect and test the chatbot:
 	```bash
 	streamlit run ui/streamlit_app.py --server.port 8501
 	```
-4. **Open the chatbot in your browser**
+4. **Open the chatbot in your browser  ( steps 1,2,3 are only for the administrators to download the whole code and test it ... you can simply open the link on step 4 to use it . Link is live and working actively from any device ... make sure not to use the chatbot on multiple ( more than 3 ) devices at once because that might cost us money for the api usage **
 	[http://65.0.29.172:8501/](http://65.0.29.172:8501/)
 
 ---
