@@ -1,0 +1,236 @@
+# IISc Research Chatbot Configuration
+
+crawler:
+  # Depth configuration per domain type
+  depth_rules:
+    department_sites:
+      max_depth: 4
+      base_depth: 3
+    external_sites:
+      max_depth: 3
+      base_depth: 2
+  
+  # Dynamic depth adjustment
+  dynamic_depth:
+    enabled: false
+    high_content_threshold: 500  # words
+    low_content_threshold: 100   # words
+    relevance_score_threshold: 0.6
+  
+  # Crawl settings
+  settings:
+    concurrent_requests: 8
+    download_delay: 1.0
+    respect_robots_txt: true
+    internal_override: true  # Override robots.txt for IISc internal sites
+    retry_enabled: true
+    retry_times: 3
+    timeout: 30
+  
+  # Domain configuration
+  domains:
+    primary:
+      - iisc.ac.in
+      - cds.iisc.ac.in
+    
+    whitelist_patterns:
+      - "*.iisc.ac.in"
+      - "faculty.*.edu"
+    
+    blacklist_patterns:
+      - "*/news/*"
+      - "*/events/*"
+      - "*/calendar/*"
+      - "*/login/*"
+      - "*/admin/*"
+  
+  # Page type patterns
+  page_types:
+    faculty:
+      url_patterns:
+        - "/faculty/"
+        - "/people/"
+        - "/staff/"
+      keywords:
+        - "professor"
+        - "research interests"
+        - "publications"
+    
+    lab:
+      url_patterns:
+        - "/lab/"
+        - "/labs/"
+        - "/research-group/"
+      keywords:
+        - "laboratory"
+        - "research group"
+        - "lab members"
+    
+    course:
+      url_patterns:
+        - "/courses/"
+        - "/teaching/"
+        - "/academics/"
+      keywords:
+        - "course"
+        - "syllabus"
+        - "credits"
+    
+    project:
+      url_patterns:
+        - "/project/"
+        - "/projects/"
+        - "/research/"
+      keywords:
+        - "project"
+        - "funded by"
+        - "collaboration"
+
+nlp:
+  # Processing settings
+  processing:
+    workers: auto  # Number of parallel workers (auto = cpu_count - 2, or specify number)
+    use_parallel: true  # Enable parallel processing for speed
+  
+  # Text processing
+  text_processing:
+    chunk_size: 250  # words per chunk
+    chunk_overlap: 50  # words overlap between chunks
+    min_chunk_size: 50  # minimum words for a valid chunk
+  
+  # Models
+  models:
+    spacy_model: en_core_web_lg
+    embedding_model: sentence-transformers/all-MiniLM-L6-v2
+    bert_model: bert-base-uncased
+    keybert_model: all-MiniLM-L6-v2
+  
+  # Enhanced models for better accuracy (optional, resource-intensive)
+  enhanced_models:
+    enabled: false  # Set to true to enable advanced models
+    
+    # Selective processing: only use heavy models on these page types
+    selective_page_types:
+      - faculty
+      - lab
+      - project
+      - publication
+    
+    # Scientific text understanding
+    scientific_ner_model: allenai/scibert_scivocab_uncased
+    
+    # Better embeddings (768 dim instead of 384)
+    # Options: all-mpnet-base-v2 (general), allenai/specter (scientific papers)
+    enhanced_embedding_model: sentence-transformers/all-mpnet-base-v2
+    
+    # Additional keyword extraction
+    use_yake: true  # Unsupervised keyword extraction
+    use_rake: false  # RAKE algorithm
+    
+    # Relationship extraction
+    use_relation_extraction: false
+    relation_model: Babelscape/rebel-large
+  
+  # Entity extraction
+  entity_extraction:
+    custom_entities:
+      - RESEARCH_TOPIC
+      - LAB_NAME
+      - PROJECT_NAME
+      - COURSE_CODE
+    
+    min_confidence: 0.7
+  
+  # Keyword extraction
+  keyword_extraction:
+    top_n: 10
+    diversity: 0.5
+    min_score: 0.3
+
+database:
+  # Neo4j
+  neo4j:
+    max_connection_pool_size: 50
+    connection_timeout: 30
+    
+    # Graph schema
+    node_labels:
+      - Faculty
+      - Lab
+      - Project
+      - ResearchTopic
+      - Course
+      - Department
+      - Publication
+    
+    relationship_types:
+      - WORKS_IN
+      - LEADS
+      - CONDUCTS
+      - COVERS
+      - TEACHES
+      - COLLABORATES_WITH
+      - PUBLISHED
+  
+  # ChromaDB
+  chromadb:
+    collection_name: iisc_research_docs
+    embedding_function: sentence-transformers
+    distance_metric: cosine
+    
+    metadata_fields:
+      - page_id
+      - domain
+      - page_type
+      - url
+      - crawl_date
+      - chunk_id
+
+rag:
+  # Retrieval settings
+  retrieval:
+    top_k_vectors: 50  # Increased from 35 to get more context
+    top_k_graph: 20
+    similarity_threshold: 0.25  # Slightly lower to include more relevant docs
+    rerank: true
+    merge_same_source: true  # Combine chunks from same URL
+    max_chunks_per_source: 10  # Allow up to 10 chunks from same page
+  
+  # Generation settings
+  generation:
+    temperature: 0.7
+    max_tokens: 1500  # Increased from 500 for complete lists
+    system_prompt: |
+      You are an intelligent research assistant for the Indian Institute of Science (IISc).
+      
+      IMPORTANT INSTRUCTIONS:
+      1. When asked to list faculty, labs, or people - provide COMPLETE lists from ALL context
+      2. If context contains multiple chunks from same source, use ALL information
+      3. Count items before responding - if you find 15+ people/items, list them ALL
+      4. For list queries, prioritize completeness over brevity
+      5. Structure long lists clearly with numbers and formatting
+      6. Never truncate lists - include every item found in the context
+      
+      Your role is to help with:
+      - Faculty members and their research interests
+      - Research labs and their projects
+      - Academic courses and programs
+      - Publications and research outputs
+      - Collaborative opportunities
+      
+      Provide accurate, COMPLETE answers based on ALL retrieved information.
+      Always cite sources with URLs when available.
+      If information is not found, clearly state that and suggest alternative queries.
+  
+  # Response formatting
+  response:
+    include_sources: true
+    max_sources: 3
+    format: markdown
+
+logging:
+  level: INFO
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  rotation: "500 MB"
+  retention: "30 days"
+  compression: "zip"

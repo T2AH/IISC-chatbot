@@ -1,0 +1,92 @@
+# Entity Extraction Configuration
+# Generic and customizable for any institution
+
+entity_types:
+  - Person
+  - Lab
+  - Organization
+  - ResearchTopic
+
+# URL patterns to extract departments (auto-detected if not provided)
+department_detection:
+  enabled: true
+  auto_detect: true  # Automatically detect departments from URLs
+  url_patterns:
+    - "/([a-z]+)/"
+    - "https?://([a-z]+)\\..*\\.ac\\.in"
+  min_department_mentions: 2  # Minimum mentions to consider valid department
+
+# Entity extraction patterns (regex)
+extraction_patterns:
+  lab:
+    - "(?:the\\s+)?(\\w+(?:\\s+\\w+){0,3})\\s+lab(?:oratory)?"
+    - "lab(?:oratory)?\\s+(?:of|for|on)\\s+(\\w+(?:\\s+\\w+){0,3})"
+    - "(\\w+)\\s+research\\s+(?:group|lab|laboratory)"
+  
+  research_topic:
+    - "research\\s+(?:in|on|area|focus)[\\s:]+(\\w+(?:\\s+\\w+){0,4})"
+    - "(?:studies?|work(?:ing)?\\s+on)\\s+(\\w+(?:\\s+\\w+){0,3})"
+  
+  organization:
+    - "department\\s+of\\s+(\\w+(?:\\s+\\w+){0,4})"
+    - "centre\\s+for\\s+(\\w+(?:\\s+\\w+){0,4})"
+    - "school\\s+of\\s+(\\w+(?:\\s+\\w+){0,4})"
+    - "institute\\s+(?:of|for)\\s+(\\w+(?:\\s+\\w+){0,4})"
+
+# Query intent detection patterns
+query_intents:
+  list_indicators:
+    - "list all"
+    - "show all"
+    - "all faculty"
+    - "all professors"
+    - "who are"
+    - "which faculty"
+    - "faculty members"
+    - "researchers in"
+    - "people in"
+  
+  aggregation_indicators:
+    - "how many"
+    - "count"
+    - "number of"
+  
+  lookup_indicators:
+    - "who is"
+    - "tell me about"
+    - "describe"
+    - "what does"
+    - "where is"
+    - "contact"
+
+# SpaCy configuration
+spacy:
+  model: "en_core_web_sm"
+  entity_labels:
+    person: ["PERSON"]
+    organization: ["ORG"]
+  max_text_length: 5000
+  min_entity_length: 3
+  max_name_words: 4
+
+# Neo4j schema configuration
+neo4j_schema:
+  nodes:
+    - Entity
+    - Department
+    - Page
+  relationships:
+    - MENTIONS
+    - BELONGS_TO
+  constraints:
+    - "CREATE CONSTRAINT entity_name IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.type) IS UNIQUE"
+    - "CREATE CONSTRAINT department_name IF NOT EXISTS FOR (d:Department) REQUIRE d.name IS UNIQUE"
+  indexes:
+    - "CREATE INDEX entity_type IF NOT EXISTS FOR (e:Entity) ON (e.type)"
+    - "CREATE INDEX entity_name_text IF NOT EXISTS FOR (e:Entity) ON (e.name)"
+
+# Performance settings
+performance:
+  batch_size: 100
+  graph_query_limit: 100
+  list_query_max_results: 100

@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iisc-research-chatbot"
+version = "1.0.0"
+description = "AI-powered research and academic chatbot for IISc with RAG capabilities"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "IISc Research Team", email = "research@iisc.ac.in"}
+]
+keywords = ["chatbot", "rag", "nlp", "research", "academic", "iisc"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "scrapy>=2.11.0",
+    "beautifulsoup4>=4.12.0",
+    "spacy>=3.7.0",
+    "transformers>=4.35.0",
+    "torch>=2.1.0",
+    "keybert>=0.8.0",
+    "sentence-transformers>=2.2.0",
+    "neo4j>=5.14.0",
+    "chromadb>=0.4.18",
+    "langchain>=0.1.0",
+    "openai>=1.6.0",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.0",
+    "pyyaml>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "black>=23.11.0",
+    "flake8>=6.1.0",
+    "mypy>=1.7.0",
+]
+
+[project.scripts]
+iisc-chatbot = "main:main"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
