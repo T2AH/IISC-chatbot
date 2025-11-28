@@ -111,7 +111,7 @@ All containers use Docker volumes for data persistence:
 - **Dual Database Architecture**: 
   - Neo4j knowledge graph for entities and relationships
   - ChromaDB vector database for semantic search
-- **RAG-Powered Chatbot**: LangChain + OpenAI integration for intelligent, context-aware responses
+- **RAG-Powered Chatbot**: LangGraph+ OpenAI integration for intelligent, context-aware responses
 - **Scalable Pipeline**: Modular architecture supporting the full pipeline from crawling to querying
 
 ## Recent Updates (2025-11-20)
@@ -163,7 +163,7 @@ If you get a `422 Unprocessable Entity` on POST requests from the frontend, conf
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    RAG Chatbot (LangChain)                       │
+│                    RAG Chatbot (LangGraph)                       │
 │  ┌──────────────────┐         ┌─────────────────────────────┐  │
 │  │ Hybrid Retriever │────────▶│  OpenAI GPT-4 Generation    │  │
 │  └──────────────────┘         └─────────────────────────────┘  │
@@ -486,7 +486,7 @@ project2/
 │   │
 │   ├── rag/                  # RAG chatbot
 │   │   ├── retriever.py             # Hybrid retrieval
-│   │   └── chatbot.py               # LangChain + OpenAI chatbot
+│   │   └── chatbot.py               # LangGraph+ OpenAI chatbot
 │   │
 │   ├── utils/                # Utilities
 │   │   └── logger.py                # Logging configuration
@@ -567,7 +567,7 @@ project2/
 
 **Key Files:**
 - `src/rag/retriever.py`: Hybrid retrieval system
-- `src/rag/chatbot.py`: LangChain + OpenAI chatbot
+- `src/rag/chatbot.py`: LangGraph+ OpenAI chatbot
 
 ## Examples
 
