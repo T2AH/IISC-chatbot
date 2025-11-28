@@ -15,20 +15,20 @@ This project was carried out by the following team members:
 
 ## Table of Contents
 
-- [Access the Live Chatbot](#access-the-live-chatbot)
-- [Features](#features)
-- [Recent Updates](#recent-updates)
-- [Architecture](#architecture)
-- [System Design](#system-design)
-- [Deployment](#deployment)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Embedding Upgrade](#embedding-upgrade)
-- [Examples](#examples)
-- [Troubleshooting](#troubleshooting)
-- [Use of AI and Coding Assistants](#use-of-ai-and-coding-assistants)
+- [Access the Live Chatbot](#-access-the-live-chatbot)
+- [Features](#-features)
+- [Recent Updates](#-recent-updates)
+- [Architecture](#-architecture)
+- [System Design](#-system-design)
+- [Deployment](#-deployment)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Usage](#-usage)
+- [Project Structure](#-project-structure)
+- [Embedding Upgrade](#-embedding-upgrade)
+- [Examples](#-examples)
+- [Troubleshooting](#-troubleshooting)
+- [Use of AI and Coding Assistants](#-use-of-ai-and-coding-assistants)
 
 
 ## • Access the Live Chatbot
