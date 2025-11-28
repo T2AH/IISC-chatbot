@@ -4,7 +4,7 @@ A production-ready Python application for building an AI-powered research and ac
 
 ## Project Context
 
-This project was developed as part of the **DS252 Introduction to Cloud Computing (Aug, 2025)** course at the Indian Institute of Science (IISc), Department of Computational and Data Sciences (CDS). The project Git repository and this README have been shared with the evaluation panel members.
+This project was developed as part of the **DS252 : Introduction to Cloud Computing (Aug, 2025)** course at the Indian Institute of Science (IISc), Department of Computational and Data Sciences (CDS). The project Git repository and this README have been shared with the evaluation panel members.
 
 ## Team 
 
