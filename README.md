@@ -2,6 +2,18 @@
 
 A production-ready Python application for building an AI-powered research and academic chatbot for the Indian Institute of Science (IISc). This system combines web crawling, NLP processing, knowledge graph storage, and retrieval-augmented generation (RAG) to help students and researchers find information about faculty, labs, courses, projects, and research topics.
 
+## Project Context
+
+This project was developed as part of the **DS252 Introduction to Cloud Computing (Aug, 2025)** course at the Indian Institute of Science (IISc), Department of Computational and Data Sciences (CDS).
+
+## Team 
+
+This project was carried out by the following team members:
+- Amitesh Pandey – amiteshp@iisc.ac.in
+- Harsh Saxena – harshsaxena@iisc.ac.in
+- Abhinav Rawat – abhinavrawat@iisc.ac.in
+
+
 ## 🌐 Access the Live Chatbot
 
 **Public Access:** [http://13.200.45.148:8080](http://13.200.45.148:8080)
@@ -92,7 +104,7 @@ All containers use Docker volumes for data persistence:
 - ChromaDB data: `./data/chromadb` (198,197 documents)
 - Chat history: SQLite database in container
 
-## 🌟 Features
+## Features
 
 - **Multi-Domain Web Crawling**: Structure-aware crawling for IISc sites and intelligent NLP-based crawling for external faculty/lab websites
 - **Advanced NLP Processing**: Entity extraction (spaCy + BERT), keyword extraction (KeyBERT), and semantic embeddings (Sentence Transformers)
@@ -129,7 +141,7 @@ curl -X POST "http://localhost:8080/chat" -H "Content-Type: application/json" -d
 If you get a `422 Unprocessable Entity` on POST requests from the frontend, confirm the request body shape matches the API schema (some endpoints accept different JSON shapes depending on recent edits).
 
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Access the Live Chatbot](#-access-the-live-chatbot)
 - [Architecture](#architecture)
@@ -142,7 +154,7 @@ If you get a `422 Unprocessable Entity` on POST requests from the frontend, conf
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
 
-## 🏗 Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -185,7 +197,7 @@ If you get a `422 Unprocessable Entity` on POST requests from the frontend, conf
               └────────────────────────┘
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Production Deployment (AWS EC2)
 
@@ -267,7 +279,7 @@ docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 
@@ -329,7 +341,7 @@ NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your_password
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 The main configuration file is `config.yaml`. Key sections:
 
@@ -368,7 +380,7 @@ rag:
     max_tokens: 500
 ```
 
-## 📖 Usage
+## Usage
 
 ### Command-Line Interface
 
@@ -446,7 +458,7 @@ python main.py pipeline --skip-crawl  # Use existing crawled data
 python main.py pipeline --skip-nlp    # Use existing processed data
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 project2/
@@ -497,7 +509,7 @@ project2/
 └── README.md                 # This file
 ```
 
-## 🔧 Components
+## Components
 
 ### 1. Crawler Layer
 
@@ -557,7 +569,7 @@ project2/
 - `src/rag/retriever.py`: Hybrid retrieval system
 - `src/rag/chatbot.py`: LangChain + OpenAI chatbot
 
-## 💡 Examples
+## Examples
 
 ### Example 1: Crawl and Process CDS Department
 
@@ -615,7 +627,7 @@ topic_info = chatbot.ask_about_research_topic("deep learning")
 print(topic_info['response'])
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Issue: OpenAI API Error
 
@@ -753,12 +765,14 @@ mkdir -p data/chromadb
 **Solution:** Adjust settings in `config.yaml`:
 ```yaml
 crawler:
-  settings:
+  settings:## Project Context
+
+This project was developed as part of the **DS252 Introduction to Cloud Computing (Aug, 2025)** course at the Indian Institute of Science (IISc), Department of Computational and Data Sciences (CDS). The project Git repository and this README have been shared with the evaluation panel members.
     concurrent_requests: 16  # Increase concurrency
     download_delay: 0.5      # Reduce delay
 ```
 
-## 📊 Pipeline Output Format
+## Pipeline Output Format
 
 ### Processed Page JSON
 
@@ -789,12 +803,8 @@ crawler:
 }
 ```
 
-## 🤝 Contributing
+## Use of AI and Coding Assistants
 
-Contributions are welcome! Areas for improvement:
-- Additional NLP models (BERT fine-tuning for domain-specific entities)
-- Enhanced relationship extraction
-- Multi-language support
-- Performance optimizations
-- Additional spiders for other departments
+The team made responsible use of AI and coding assistants (such as GitHub Copilot, CatGPT, and similar tools) to help with tasks including code suggestions, documentation drafts, and debugging. All generated code and documentation were reviewed, tested, and adapted by the team to ensure correctness, security, and alignment with the course requirements.
+
 
