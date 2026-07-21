@@ -33,7 +33,7 @@ This project was carried out by the following team members:
 
 ## • Access the Live Chatbot
 
-**Public Access:** [http://13.200.45.148:8080](http://13.200.45.148:8080)
+[deprecated] **Public Access:** [http://13.200.45.148:8080](http://13.200.45.148:8080)
 
 The chatbot is deployed on AWS EC2 and running 24/7. Simply visit the URL above to start chatting!
 
